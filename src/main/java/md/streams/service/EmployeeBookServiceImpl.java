@@ -1,13 +1,17 @@
 package md.streams.service;
 
 
+import md.streams.exceptions.DepartmentNotProvidedException;
+import md.streams.interfaces.EmployeeBookService;
 import md.streams.model.Employee;
+import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-public class EmployeeBookServiceImpl {
+@Service
+public class EmployeeBookServiceImpl implements EmployeeBookService {
     private Employee[] employees = new Employee[10];
 
     private static final double EMPTY_DOUBLE = 0.0;
@@ -25,40 +29,47 @@ public class EmployeeBookServiceImpl {
         employees[9] = new Employee("Кристина Ворникова Константиновна", 5, 15000);
     }
 
-    public void printAllEmployees() {
-        for (Employee employee : employees) {
-            if(employee != null) {
-                System.out.println(employee);
-            }
-        }
+    public Map<String, List<Employee>> printAllEmployees() {
+        fillEmloyeesArray();
+        return Arrays.stream(employees)
+                .filter(Objects::nonNull)
+                .collect(Collectors.groupingBy(employee ->
+                        "Department: " + employee.getDepartment()
+                ));
     }
 
-    public Employee findEmployeeById(int id){
-        return  Arrays.stream(employees)
+    public Employee findEmployeeById(int id) {
+        return Arrays.stream(employees)
                 .filter(Objects::nonNull)
                 .filter(employee -> employee.getId() == id)
                 .findFirst()
                 .orElse(null);
     }
 
-    public boolean addNewEmployee(Employee newEmployee){
-        for (int i = 0; i < employees.length; i++) {
-            if(employees[i] == null){
-                employees[i] = newEmployee;
-                return true;
-            }
+    public boolean addNewEmployee(Employee newEmployee) {
+        OptionalInt indexOpt = IntStream.range(0, employees.length)
+                .filter(i -> employees[i] == null)
+                .findFirst();
+
+        if (indexOpt.isPresent()) {
+            employees[indexOpt.getAsInt()] = newEmployee;
+            return true;
         }
         return false;
     }
 
-    public String removeEmployee(int id){
-        for (int i = 0; i < employees.length; i++) {
-            if(employees[i].getId() == id){
-                employees[i] = null;
-                return String.format("Employee with id: {} was removed successfully.", id);
-            }
+    public String removeEmployee(int id) {
+
+        Employee[] filteredEmployees = Arrays.stream(employees)
+                .filter(employee -> employee == null || employee.getId() != id)
+                .toArray(Employee[]::new);
+
+        if (filteredEmployees.length < employees.length) {
+            employees = filteredEmployees;
+            return String.format("Employee with id: %d was removed successfully.", id);
         }
-        return String.format("Employee with id: {} was not found.", id);
+
+        return String.format("Employee with id: %d was not found.", id);
     }
 
     public double getAllSalariesSum() {
@@ -115,21 +126,29 @@ public class EmployeeBookServiceImpl {
         }
     }
 
-    public Employee getDepartmentMinSalary(int department) {
+    public Employee getDepartmentMinSalary(Integer departmentId) throws DepartmentNotProvidedException {
+        if (departmentId == null) {
+            throw new DepartmentNotProvidedException("Department is not provided");
+        }
+        fillEmloyeesArray();
 
         return Arrays.stream(employees)
                 .filter(Objects::nonNull)
                 .filter(employee -> employee.getEmployeeSalary() != EMPTY_DOUBLE)
-                .filter(employee -> employee.getDepartment() == department)
+                .filter(employee -> employee.getDepartment() == departmentId)
                 .min(Comparator.comparingDouble(Employee::getEmployeeSalary))
                 .orElse(null);
     }
 
-    public Employee getDepartmentMaxSalary(int department) {
+    public Employee getDepartmentMaxSalary(Integer departmentId) throws DepartmentNotProvidedException {
+        if (departmentId == null) {
+            throw new DepartmentNotProvidedException("Department is not provided");
+        }
+        fillEmloyeesArray();
         return Arrays.stream(employees)
                 .filter(Objects::nonNull)
                 .filter(employee -> employee.getEmployeeSalary() != EMPTY_DOUBLE)
-                .filter(employee -> employee.getDepartment() == department)
+                .filter(employee -> employee.getDepartment() == departmentId)
                 .max(Comparator.comparingDouble(Employee::getEmployeeSalary))
                 .orElse(null);
     }
@@ -163,12 +182,15 @@ public class EmployeeBookServiceImpl {
         }
     }
 
-    public void printAllEmployeesDepartment(int department) {
-        for (Employee employee : employees) {
-            if (employee != null && employee.getDepartment() == department) {
-                System.out.println(employee);
-            }
+    public List<Employee> printAllEmployeesDepartment(Integer departmentId) throws DepartmentNotProvidedException {
+        if (departmentId == null) {
+            throw new DepartmentNotProvidedException("Department is not provided");
         }
+        fillEmloyeesArray();
+        return Arrays.stream(employees)
+                .filter(Objects::nonNull)
+                .filter(e -> e.getDepartment() == departmentId)
+                .collect(Collectors.toList());
     }
 
     public void getLessSalary(double number) {
