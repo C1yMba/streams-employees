@@ -2,7 +2,6 @@ package md.streams.service;
 
 
 import md.streams.exceptions.DepartmentNotProvidedException;
-import md.streams.interfaces.EmployeeBookService;
 import md.streams.model.Employee;
 import org.springframework.stereotype.Service;
 
@@ -11,10 +10,10 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Service
-public class EmployeeBookServiceImpl implements EmployeeBookService {
+public class EmployeeBookServiceImpl {
     private Employee[] employees = new Employee[10];
 
-    private static final double EMPTY_DOUBLE = 0.0;
+    public static final double EMPTY_DOUBLE = 0.0;
 
     public void fillEmloyeesArray() {
         employees[0] = new Employee("Вася Пупкин Иванович", 1, 10000);
@@ -211,4 +210,7 @@ public class EmployeeBookServiceImpl implements EmployeeBookService {
                 .forEach(System.out::println);
     }
 
+    public Employee[] getEmployees() {
+        return employees;
+    }
 }
