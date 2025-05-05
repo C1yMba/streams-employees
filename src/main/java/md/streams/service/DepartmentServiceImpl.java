@@ -24,7 +24,7 @@ public class DepartmentServiceImpl implements DepartmentsService {
             throw new DepartmentNotProvidedException("Department is not provided");
         }
         employeeBookService.fillEmloyeesArray();
-        return Arrays.stream(employeeBookService.getEmployees())
+        return employeeBookService.getEmployees().stream()
                 .filter(Objects::nonNull)
                 .filter(employee -> employee.getEmployeeSalary() != EMPTY_DOUBLE)
                 .filter(employee -> employee.getDepartment() == departmentId)
@@ -38,7 +38,7 @@ public class DepartmentServiceImpl implements DepartmentsService {
         }
         employeeBookService.fillEmloyeesArray();
 
-        return Arrays.stream(employeeBookService.getEmployees())
+        return employeeBookService.getEmployees().stream()
                 .filter(Objects::nonNull)
                 .filter(employee -> employee.getEmployeeSalary() != EMPTY_DOUBLE)
                 .filter(employee -> employee.getDepartment() == departmentId)
@@ -51,7 +51,7 @@ public class DepartmentServiceImpl implements DepartmentsService {
             throw new DepartmentNotProvidedException("Department is not provided");
         }
         employeeBookService.fillEmloyeesArray();
-        return Arrays.stream(employeeBookService.getEmployees())
+        return employeeBookService.getEmployees().stream()
                 .filter(Objects::nonNull)
                 .filter(e -> e.getDepartment() == departmentId)
                 .collect(Collectors.toList());
@@ -59,7 +59,7 @@ public class DepartmentServiceImpl implements DepartmentsService {
 
     public Map<String, List<Employee>> printAllEmployees() {
         employeeBookService.fillEmloyeesArray();
-        return Arrays.stream(employeeBookService.getEmployees())
+        return employeeBookService.getEmployees().stream()
                 .filter(Objects::nonNull)
                 .collect(Collectors.groupingBy(employee ->
                         "Department: " + employee.getDepartment()

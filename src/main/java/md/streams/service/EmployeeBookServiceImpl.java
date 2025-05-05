@@ -11,26 +11,26 @@ import java.util.stream.IntStream;
 
 @Service
 public class EmployeeBookServiceImpl {
-    private Employee[] employees = new Employee[10];
-
     public static final double EMPTY_DOUBLE = 0.0;
 
+    private List<Employee> employees = new ArrayList<>();
+
     public void fillEmloyeesArray() {
-        employees[0] = new Employee("Вася Пупкин Иванович", 1, 10000);
-        employees[1] = new Employee("Дима Пупкин Петрович", 2, 10000);
-        employees[2] = new Employee("Вася Непупкин Владимирович", 3, 11000);
-        employees[3] = new Employee("Кирил Иванов Христофорович", 4, 20000);
-        employees[4] = new Employee("Петр Первый Иванович", 5, 30000);
-        employees[5] = new Employee("Андрей Димов Кирилович", 1, 10000);
-        employees[6] = new Employee("Ирина Пупкина Ивановна", 3, 15000);
-        employees[7] = new Employee("Мария Ворникова Константиновна", 5, 19800);
-        employees[8] = new Employee("Анна Ворникова Константиновна", 5, 17000);
-        employees[9] = new Employee("Кристина Ворникова Константиновна", 5, 15000);
+        employees.add(new Employee("Вася Пупкин Иванович", 1, 10000));
+        employees.add(new Employee("Дима Пупкин Петрович", 2, 10000));
+        employees.add(new Employee("Вася Непупкин Владимирович", 3, 11000));
+        employees.add(new Employee("Кирил Иванов Христофорович", 4, 20000));
+        employees.add(new Employee("Петр Первый Иванович", 5, 30000));
+        employees.add(new Employee("Андрей Димов Кирилович", 1, 10000));
+        employees.add(new Employee("Ирина Пупкина Ивановна", 3, 15000));
+        employees.add(new Employee("Мария Ворникова Константиновна", 5, 19800));
+        employees.add(new Employee("Анна Ворникова Константиновна", 5, 17000));
+        employees.add(new Employee("Кристина Ворникова Константиновна", 5, 15000));
     }
 
     public Map<String, List<Employee>> printAllEmployees() {
         fillEmloyeesArray();
-        return Arrays.stream(employees)
+        return employees.stream()
                 .filter(Objects::nonNull)
                 .collect(Collectors.groupingBy(employee ->
                         "Department: " + employee.getDepartment()
@@ -38,7 +38,7 @@ public class EmployeeBookServiceImpl {
     }
 
     public Employee findEmployeeById(int id) {
-        return Arrays.stream(employees)
+        return employees.stream()
                 .filter(Objects::nonNull)
                 .filter(employee -> employee.getId() == id)
                 .findFirst()
@@ -46,34 +46,22 @@ public class EmployeeBookServiceImpl {
     }
 
     public boolean addNewEmployee(Employee newEmployee) {
-        OptionalInt indexOpt = IntStream.range(0, employees.length)
-                .filter(i -> employees[i] == null)
-                .findFirst();
-
-        if (indexOpt.isPresent()) {
-            employees[indexOpt.getAsInt()] = newEmployee;
-            return true;
-        }
-        return false;
+        employees.add(newEmployee);
+        return true;
     }
 
     public String removeEmployee(int id) {
+        boolean isRemoved = employees.removeIf(employee -> employee != null && employee.getId() == id);
 
-        Employee[] filteredEmployees = Arrays.stream(employees)
-                .filter(employee -> employee == null || employee.getId() != id)
-                .toArray(Employee[]::new);
-
-        if (filteredEmployees.length < employees.length) {
-            employees = filteredEmployees;
+        if (isRemoved) {
             return String.format("Employee with id: %d was removed successfully.", id);
         }
-
         return String.format("Employee with id: %d was not found.", id);
     }
 
     public double getAllSalariesSum() {
 
-        return Arrays.stream(employees)
+        return employees.stream()
                 .filter(Objects::nonNull)
                 .filter(employee -> employee.getEmployeeSalary() != EMPTY_DOUBLE)
                 .mapToDouble(Employee::getEmployeeSalary)
@@ -82,7 +70,7 @@ public class EmployeeBookServiceImpl {
 
     public Employee getMinSalary() {
 
-        return Arrays.stream(employees)
+        return employees.stream()
                 .filter(Objects::nonNull)
                 .filter(employee -> employee.getEmployeeSalary() != EMPTY_DOUBLE)
                 .min(Comparator.comparingDouble(Employee::getEmployeeSalary))
@@ -91,7 +79,7 @@ public class EmployeeBookServiceImpl {
 
     public Employee getMaxSalary() {
 
-        return Arrays.stream(employees)
+        return employees.stream()
                 .filter(Objects::nonNull)
                 .filter(employee -> employee.getEmployeeSalary() != EMPTY_DOUBLE)
                 .max(Comparator.comparingDouble(Employee::getEmployeeSalary))
@@ -100,7 +88,7 @@ public class EmployeeBookServiceImpl {
 
     public double getSalariesAverageValue() {
 
-        return Arrays.stream(employees)
+        return employees.stream()
                 .filter(Objects::nonNull)
                 .filter(employee -> employee.getEmployeeSalary() != EMPTY_DOUBLE)
                 .mapToDouble(Employee::getEmployeeSalary)
@@ -109,7 +97,7 @@ public class EmployeeBookServiceImpl {
     }
 
     public void getEmployeesNames() {
-        Arrays.stream(employees)
+        employees.stream()
                 .filter(Objects::nonNull)
                 .filter(employee -> employee.getFullName() != null)
                 .map(employee -> "ФИО: " + employee.getFullName())
@@ -131,7 +119,7 @@ public class EmployeeBookServiceImpl {
         }
         fillEmloyeesArray();
 
-        return Arrays.stream(employees)
+        return employees.stream()
                 .filter(Objects::nonNull)
                 .filter(employee -> employee.getEmployeeSalary() != EMPTY_DOUBLE)
                 .filter(employee -> employee.getDepartment() == departmentId)
@@ -144,7 +132,7 @@ public class EmployeeBookServiceImpl {
             throw new DepartmentNotProvidedException("Department is not provided");
         }
         fillEmloyeesArray();
-        return Arrays.stream(employees)
+        return employees.stream()
                 .filter(Objects::nonNull)
                 .filter(employee -> employee.getEmployeeSalary() != EMPTY_DOUBLE)
                 .filter(employee -> employee.getDepartment() == departmentId)
@@ -154,7 +142,7 @@ public class EmployeeBookServiceImpl {
 
     public double getDepartmentSumSalary(int department) {
 
-        return Arrays.stream(employees)
+        return employees.stream()
                 .filter(Objects::nonNull)
                 .filter(employee -> employee.getEmployeeSalary() != EMPTY_DOUBLE)
                 .filter(employee -> employee.getDepartment() == department)
@@ -164,7 +152,7 @@ public class EmployeeBookServiceImpl {
 
     public double getDepartmentAverageSalary(int department) {
 
-        return Arrays.stream(employees)
+        return employees.stream()
                 .filter(Objects::nonNull)
                 .filter(employee -> employee.getEmployeeSalary() != EMPTY_DOUBLE)
                 .filter(employee -> employee.getDepartment() == department)
@@ -186,7 +174,7 @@ public class EmployeeBookServiceImpl {
             throw new DepartmentNotProvidedException("Department is not provided");
         }
         fillEmloyeesArray();
-        return Arrays.stream(employees)
+        return employees.stream()
                 .filter(Objects::nonNull)
                 .filter(e -> e.getDepartment() == departmentId)
                 .collect(Collectors.toList());
@@ -194,7 +182,7 @@ public class EmployeeBookServiceImpl {
 
     public void getLessSalary(double number) {
         System.out.println("Сотруники с зп поменьше: ");
-        Arrays.stream(employees)
+        employees.stream()
                 .filter(Objects::nonNull)
                 .filter(employee -> employee.getEmployeeSalary() < number)
                 .map(employee -> "ID сотрудника " + employee.getId() + " ФИО: " + employee.getFullName() + " Зарплата: " + employee.getEmployeeSalary())
@@ -203,14 +191,14 @@ public class EmployeeBookServiceImpl {
 
     public void getMoreSalary(double number) {
         System.out.println("Сотрудники с зп побольше:");
-        Arrays.stream(employees)
+        employees.stream()
                 .filter(Objects::nonNull)
                 .filter(employee -> employee.getEmployeeSalary() >= number)
                 .map(employee -> "ID сотрудника " + employee.getId() + " ФИО: " + employee.getFullName() + " Зарплата: " + employee.getEmployeeSalary())
                 .forEach(System.out::println);
     }
 
-    public Employee[] getEmployees() {
+    public List<Employee> getEmployees() {
         return employees;
     }
 }
