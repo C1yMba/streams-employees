@@ -23,12 +23,17 @@ public class DepartmentServiceImpl implements DepartmentsService {
     public DepartmentServiceImpl(EmployeeBookService employeeBookService) {
         this.employeeBookService = employeeBookService;
     }
-
+    /**
+     * Заполняет список сотрудников тестовыми данными.
+     * Вызывается автоматически после инициализации бина.
+     */
     @PostConstruct
     public void init() {
-        employeeBookService.fillEmloyeesList();
+        employeeBookService.fillEmployeesList();
     }
-
+    /**
+     * Возвращает сотрудника с максимальной зарплатой в департаменте, департамент в свою очередь определяет по переданному departmentId.
+     */
     public Employee getDepartmentMaxSalary(Integer departmentId) throws DepartmentNotProvidedException {
         if (departmentId == null) {
             throw new DepartmentNotProvidedException("Department is not provided");
@@ -41,7 +46,9 @@ public class DepartmentServiceImpl implements DepartmentsService {
                 .max(Comparator.comparingDouble(Employee::getEmployeeSalary))
                 .orElse(null);
     }
-
+    /**
+     * Возвращает сумму всех зарплат в департаменте, департамент в свою очередь определяет по переданному departmentId.
+     */
     @Override
     public Double getDepartmentSumSalary(Integer departmentId) throws DepartmentNotProvidedException {
 
@@ -56,7 +63,9 @@ public class DepartmentServiceImpl implements DepartmentsService {
                 .mapToDouble(Employee::getEmployeeSalary)
                 .sum();
     }
-
+    /**
+     * Возвращает сотрудника с минимальной зарплатой в департаменте, департамент в свою очередь определяет по переданному departmentId.
+     */
     public Employee getDepartmentMinSalary(Integer departmentId) throws DepartmentNotProvidedException {
         if (departmentId == null) {
             throw new DepartmentNotProvidedException("Department is not provided");
@@ -69,7 +78,9 @@ public class DepartmentServiceImpl implements DepartmentsService {
                 .min(Comparator.comparingDouble(Employee::getEmployeeSalary))
                 .orElse(null);
     }
-
+    /**
+     * Возвращает список всех сотрудников департамента, департамент в свою очередь определяет по переданному departmentId.
+     */
     public List<Employee> printAllEmployeesDepartment(Integer departmentId) throws DepartmentNotProvidedException {
 
         if (departmentId == null) {
@@ -81,7 +92,9 @@ public class DepartmentServiceImpl implements DepartmentsService {
                 .filter(e -> e.getDepartment() == departmentId)
                 .collect(Collectors.toList());
     }
-
+    /**
+     * Возвращает списко всех сотрудников сгрупированных по департаменту.
+     */
     public Map<String, List<Employee>> printAllEmployees() {
 
         return employeeBookService.getEmployees().stream()
