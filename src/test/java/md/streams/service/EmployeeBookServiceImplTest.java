@@ -22,7 +22,7 @@ class EmployeeBookServiceImplTest {
     @BeforeEach
     void setUp() {
         employeeBookService.getEmployees().clear();
-        employeeBookService.fillEmloyeesList();
+        employeeBookService.fillEmployeesList();
     }
 
     @Test

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface EmployeeBookService {
-    void fillEmloyeesList();
+    void fillEmployeesList();
 
     Map<String, List<Employee>> printAllEmployees();
 
