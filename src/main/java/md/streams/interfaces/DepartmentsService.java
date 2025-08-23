@@ -10,6 +10,8 @@ public interface DepartmentsService {
 
     Employee getDepartmentMaxSalary(Integer department) throws DepartmentNotProvidedException;
 
+    Double getDepartmentSumSalary(Integer department) throws DepartmentNotProvidedException;
+
     Employee getDepartmentMinSalary(Integer department) throws DepartmentNotProvidedException;
 
     List<Employee> printAllEmployeesDepartment(Integer departmentId) throws DepartmentNotProvidedException;
